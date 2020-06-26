@@ -133,19 +133,19 @@ namespace RaptorTests.OpenGL
             Assert.Equal(5, buffer.TotalQuads);
         }
 
-        [Fact]
-        public void UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer()
-        {
-            //Arrange
-            var buffer = new GPUBuffer<VertexData>(_mockGL.Object);
-            var srcRect = new Rectangle();
+        //[Fact]
+        //public void UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer()
+        //{
+        //    //Arrange
+        //    var buffer = new GPUBuffer<VertexData>(_mockGL.Object);
+        //    var srcRect = new Rectangle();
 
-            //Act
-            buffer.UpdateQuad(0, srcRect, 50, 50, Color.White);
+        //    //Act
+        //    buffer.UpdateQuad(0, srcRect, 50, 50, Color.White);
             
-            //Assert
-            _mockGL.Verify(m => m.BufferSubData(BufferTarget.ArrayBuffer, It.IsAny<IntPtr>(), It.IsAny<int>(), It.IsAny<QuadData>()));
-        }
+        //    //Assert
+        //    _mockGL.Verify(m => m.BufferSubData(BufferTarget.ArrayBuffer, It.IsAny<IntPtr>(), It.IsAny<int>(), It.IsAny<QuadData>()));
+        //}
 
         [Fact]
         public void Dispose_WithUnmanagedResourcesToDispose_DisposesOfUnmanagedResources()

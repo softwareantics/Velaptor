@@ -40,7 +40,6 @@ namespace Raptor
         /// </summary>
         private static void SetupContainer()
         {
-
             IocContainer.Register<ITextFile, TextFile>();
             IocContainer.Register<IImageFile, ImageFile>();
             IocContainer.Register<IGLInvoker, GLInvoker>();

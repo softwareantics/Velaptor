@@ -11,8 +11,10 @@ namespace Raptor.OpenGL
     using OpenToolkit.Mathematics;
     using OpenToolkit.Windowing.Common;
     using OpenToolkit.Windowing.Desktop;
-    using NETColor = System.Drawing.Color;
 
+    /// <summary>
+    /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
+    /// </summary>
     internal class GLWindow : GameWindow, IWindow
     {
         private bool isShuttingDown;
@@ -57,22 +59,22 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked at a particular frame rate to run update logic.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked per frame for updating.
         /// </summary>
         public Action<FrameTime>? Update { get; set; }
 
         /// <summary>
-        /// Invoked at a particular frame rate to render graphics.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked per frame for rendering.
         /// </summary>
         public Action<FrameTime>? Draw { get; set; }
 
         /// <summary>
-        /// Invoked when the window is resized.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked every time the window is resized.
         /// </summary>
         public Action? WinResize { get; set; }
 
         /// <summary>
-        /// Invoked once to initialize.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize.
         /// </summary>
         public Action? Init { get; set; }
 

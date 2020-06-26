@@ -392,16 +392,20 @@ namespace RaptorTests.Graphics
 
         private void AssertTransformUpdate(int times)
         {
+            var matrix = new Matrix4();
+
             //Verify with any transform
-            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, It.IsAny<Matrix4>()),
+            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, ref matrix),
                 Times.Exactly(times),
                 "Transformation matrix not updated on GPU");
         }
 
         private void AssertTransformUpdate(int times, Matrix4 transform)
         {
+            var matrix = new Matrix4();
+
             //Verify with given transform
-            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, transform),
+            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, ref matrix),
                 Times.Exactly(times),
                 "Transformation matrix not updated on GPU");
         }
