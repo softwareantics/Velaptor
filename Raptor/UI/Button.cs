@@ -49,7 +49,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets the width of the <see cref="Button"/>.
         /// </summary>
-        public int Width
+        public uint Width
         {
             get
             {
@@ -65,7 +65,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets the height of the <see cref="Button"/>.
         /// </summary>
-        public int Height
+        public uint Height
         {
             get
             {
@@ -129,8 +129,8 @@ namespace Raptor.UI
 
             this.rect.X = (int)(Position.X - (Width / 2f));
             this.rect.Y = (int)(Position.Y - (Height / 2f));
-            this.rect.Width = Width;
-            this.rect.Height = Height;
+            this.rect.Width = (int)Width;
+            this.rect.Height = (int)Height;
         }
 
         /// <summary>

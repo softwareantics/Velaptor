@@ -1,16 +1,13 @@
 ﻿using FileIO.Core;
 using Moq;
-using OpenToolkit.Graphics.OpenGL4;
 using Raptor.Graphics;
 using Raptor.OpenGL;
 using RaptorTests.Helpers;
 using System.Drawing;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
-using OpenToolkit.Mathematics;
-using System.Diagnostics.CodeAnalysis;
+using Silk.NET.OpenGL;
+using System.Numerics;
 
 namespace RaptorTests.Graphics
 {
@@ -30,8 +27,8 @@ namespace RaptorTests.Graphics
             this.mockTextureTwo.SetupGet(p => p.ID).Returns(1);
 
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<int>())).Returns(true);
-            this.mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<int>())).Returns(true);
+            this.mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
 
             this.mockShader = new Mock<IShaderProgram>();
 
@@ -133,7 +130,7 @@ namespace RaptorTests.Graphics
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
             //Assert
-            this.mockGL.Verify(m => m.GetUniformLocation(It.IsAny<int>(), "uTransform"), Times.Once());
+            this.mockGL.Verify(m => m.GetUniformLocation(It.IsAny<uint>(), "uTransform"), Times.Once());
         }
 
         [Fact]
@@ -269,12 +266,27 @@ namespace RaptorTests.Graphics
             batch.BeginBatch();
             batch.Render(this.mockTextureOne.Object, srcRect, destRect, 0.5f, 90, tintClr);
             batch.Render(this.mockTextureTwo.Object, srcRect, destRect, 0.5f, 90, tintClr);
-            var transMatrix = new Matrix4()
+            var transMatrix = new Matrix4x4()
             {
-                Column0 = new Vector4(-6.5567085E-09f, 0.15f, 0f, 0f),
-                Column1 = new Vector4(-0.1f, -4.371139E-09F, 0f, 0.39999998f),
-                Column2 = new Vector4(0f, 0f, 1f, 0f),
-                Column3 = new Vector4(0f, 0f, 0f, 1f)
+                M11 = -6.5567085E-09f,
+                M12 = 0.15f,
+                M13 = 0f,
+                M14 = 0f,
+
+                M21 = -0.1f,
+                M22 = -4.371139E-09F,
+                M23 = 0f,
+                M24 = 0.39999998f,
+
+                M31 = 0f,
+                M32 = 0f,
+                M33 = 1f,
+                M34 = 0f,
+
+                M41 = 0f,
+                M42 = 0f,
+                M43 = 0f,
+                M44 = 1f
             };
 
             //Assert
@@ -298,6 +310,29 @@ namespace RaptorTests.Graphics
             batch.Render(this.mockTextureOne.Object, It.IsAny<int>(), It.IsAny<int>());
             batch.Render(this.mockTextureOne.Object, It.IsAny<int>(), It.IsAny<int>());
             batch.Render(this.mockTextureOne.Object, It.IsAny<int>(), It.IsAny<int>());
+
+            var transMatrix = new Matrix4x4()
+            {
+                M11 = -6.5567085E-09f,
+                M12 = 0.15f,
+                M13 = 0f,
+                M14 = 0f,
+
+                M21 = -0.1f,
+                M22 = -4.371139E-09F,
+                M23 = 0f,
+                M24 = 0.39999998f,
+
+                M31 = 0f,
+                M32 = 0f,
+                M33 = 1f,
+                M34 = 0f,
+
+                M41 = 0f,
+                M42 = 0f,
+                M43 = 0f,
+                M44 = 1f
+            };
 
             //Assert
             AssertBatchRendered(2, batchSize, 1, 1);
@@ -349,8 +384,10 @@ namespace RaptorTests.Graphics
         /// </summary>
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
-        private void AssertBatchRendered(int totalItemsInBatch, int totalBatchUpdates, int totalTextureBinds, int totalDrawCalls)
-            => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, new Matrix4());
+        private void AssertBatchRendered(uint totalItemsInBatch, int totalBatchUpdates, int totalTextureBinds, int totalDrawCalls)
+        {
+            AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, new Matrix4x4());
+        }
 
         /// <summary>
         /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
@@ -358,9 +395,9 @@ namespace RaptorTests.Graphics
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
         /// <param name="transform">The transform that was sent to the GPU.  An empty transform means any transform data would assert true.</param>
-        private void AssertBatchRendered(int totalItemsInBatch, int totalBatchUpdates, int totalTextureBinds, int totalDrawCalls, Matrix4 transform)
+        private unsafe void AssertBatchRendered(uint totalItemsInBatch, int totalBatchUpdates, int totalTextureBinds, int totalDrawCalls, Matrix4x4 transform)
         {
-            this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<int>()),
+            this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<uint>()),
                 Times.Exactly(totalTextureBinds),
                 "Did not bind texture");
 
@@ -385,27 +422,25 @@ namespace RaptorTests.Graphics
                 "Quad was not updated on GPU.");
 
             this.mockGL.Verify(m => m.DrawElements(PrimitiveType.Triangles, 6 * totalItemsInBatch,
-                                                   DrawElementsType.UnsignedInt, IntPtr.Zero),
+                                                   DrawElementsType.UnsignedInt, IntPtr.Zero.ToPointer()),
                 Times.Exactly(totalDrawCalls),
                 $"Expected total draw calls of {totalDrawCalls} not reached.");
         }
 
+        delegate void MockUniformMatrix4(int location, bool transpose, ref Matrix4x4 matrix);
+
         private void AssertTransformUpdate(int times)
         {
-            var matrix = new Matrix4();
-
             //Verify with any transform
-            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, ref matrix),
+            this.mockGL.Verify(m => m.UniformMatrix4x4(It.IsAny<int>(), true, It.IsAny<Matrix4x4>()),
                 Times.Exactly(times),
                 "Transformation matrix not updated on GPU");
         }
 
-        private void AssertTransformUpdate(int times, Matrix4 transform)
+        private void AssertTransformUpdate(int times, Matrix4x4 transform)
         {
-            var matrix = new Matrix4();
-
             //Verify with given transform
-            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, ref matrix),
+            this.mockGL.Verify(m => m.UniformMatrix4x4(0, true, transform),
                 Times.Exactly(times),
                 "Transformation matrix not updated on GPU");
         }

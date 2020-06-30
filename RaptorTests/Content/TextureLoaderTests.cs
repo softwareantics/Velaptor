@@ -5,7 +5,7 @@
     using Raptor.OpenGL;
     using Moq;
     using Xunit;
-    using OpenToolkit.Graphics.OpenGL4;
+    using Silk.NET.OpenGL;
 
     public class TextureLoaderTests
     {
@@ -34,7 +34,7 @@
             //Assert
             Assert.NotNull(actual);
             this.mockGL.Verify(m => m.GenTexture(), Times.Once());
-            this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<int>()), Times.Exactly(2));
+            this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
         }
     }
 }

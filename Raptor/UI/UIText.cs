@@ -15,7 +15,7 @@ namespace Raptor.UI
     /// </summary>
     public class UIText
     {
-        private int elapsedTime; // The amount of time that has elapsed since the last frame in miliseconds.
+        private double elapsedTime; // The amount of time that has elapsed since the last frame in miliseconds.
         private bool updateText; // Indicates if the text can be updated.  Only updated if the UpdateFrequency value is >= to the elapsed time
         private RenderText? labelText;
 
@@ -200,7 +200,7 @@ namespace Raptor.UI
         /// <param name="frameTime">The game time of the last frame.</param>
         public void Update(FrameTime frameTime)
         {
-            this.elapsedTime += frameTime.ElapsedTime.Milliseconds;
+            this.elapsedTime += frameTime.ElapsedTime;
 
             if (this.elapsedTime >= UpdateFrequency)
             {

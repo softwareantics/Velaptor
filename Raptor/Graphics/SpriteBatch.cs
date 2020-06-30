@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,12 +9,9 @@ namespace Raptor.Graphics
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
-    using System.Xml;
-    using FileIO.Core;
-    using FileIO.File;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using System.Numerics;
     using Raptor.OpenGL;
+    using Silk.NET.OpenGL;
 
     /// <inheritdoc/>
     public class SpriteBatch : ISpriteBatch
@@ -28,8 +25,8 @@ namespace Raptor.Graphics
         private bool hasBegun;
         private int batchSize = 10;
         private int currentBatchItem = 0;
-        private int previousTextureID = -1;
-        private int currentTextureID;
+        private uint previousTextureID = 0;
+        private uint currentTextureID;
         private bool firstRenderMethodInvoke = true;
 
         /// <summary>
@@ -70,10 +67,10 @@ namespace Raptor.Graphics
         }
 
         /// <inheritdoc/>
-        public int RenderSurfaceWidth { get; set; } = 800;
+        public int RenderSurfaceWidth { get; set; } = 1020;
 
         /// <inheritdoc/>
-        public int RenderSurfaceHeight { get; set; } = 600;
+        public int RenderSurfaceHeight { get; set; } = 800;
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
@@ -95,11 +92,11 @@ namespace Raptor.Graphics
             {
                 X = 0,
                 Y = 0,
-                Width = texture.Width,
-                Height = texture.Height,
+                Width = (int)texture.Width,
+                Height = (int)texture.Height,
             };
 
-            var destRect = new Rectangle(x, y, texture.Width, texture.Height);
+            var destRect = new Rectangle(x, y, (int)texture.Width, (int)texture.Height);
 
             Render(texture, srcRect, destRect, 1, 0, tintColor);
         }
@@ -207,9 +204,9 @@ namespace Raptor.Graphics
         /// <summary>
         /// Renders the current batch of textures.
         /// </summary>
-        private void RenderBatch()
+        private unsafe void RenderBatch()
         {
-            var batchAmountToRender = this.batchItems.Count(i => !i.Value.IsEmpty);
+            var batchAmountToRender = (uint)this.batchItems.Count(i => !i.Value.IsEmpty);
             var textureIsBound = false;
 
             for (var i = 0; i < this.batchItems.Values.Count; i++)
@@ -243,7 +240,7 @@ namespace Raptor.Graphics
             // Only render the amount of elements for the amount of batch items to render.
             // 6 = the number of vertices/quad and each batch is a quad. batchAmontToRender is the total quads to render
             if (batchAmountToRender > 0)
-                this.gl.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.gl.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero.ToPointer());
 
             // Empty the batch items
             for (var i = 0; i < this.batchItems.Count; i++)
@@ -273,7 +270,7 @@ namespace Raptor.Graphics
                 size,
                 angle);
 
-            this.gl.UniformMatrix4(this.transDataLocation + quadID, true, ref transMatrix);
+            this.gl.UniformMatrix4x4(this.transDataLocation + quadID, true, transMatrix);
         }
 
         /// <summary>
@@ -285,7 +282,7 @@ namespace Raptor.Graphics
         /// <param name="height">The height of a texture.</param>
         /// <param name="size">The size of a texture. 1 represents normal size and 1.5 represents 150%.</param>
         /// <param name="angle">The angle of the texture.</param>
-        private Matrix4 BuildTransformationMatrix(float x, float y, int width, int height, float size, float angle)
+        private Matrix4x4 BuildTransformationMatrix(float x, float y, int width, int height, float size, float angle)
         {
             var scaleX = (float)width / RenderSurfaceWidth;
             var scaleY = (float)height / RenderSurfaceHeight;
@@ -297,14 +294,14 @@ namespace Raptor.Graphics
             var ndcY = y.MapValue(0f, RenderSurfaceHeight, 1f, -1f);
 
             // NOTE: (+ degrees) rotates CCW and (- degress) rotates CW
-            var angleRadians = MathHelper.DegreesToRadians(angle);
+            var angleRadians = angle.ToRadians();
 
             // Invert angle to rotate CW instead of CCW
             angleRadians *= -1;
 
-            var rotation = Matrix4.CreateRotationZ(angleRadians);
-            var scaleMatrix = Matrix4.CreateScale(scaleX, scaleY, 1f);
-            var positionMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
+            var rotation = Matrix4x4.CreateRotationZ(angleRadians);
+            var scaleMatrix = Matrix4x4.CreateScale(scaleX, scaleY, 1f);
+            var positionMatrix = Matrix4x4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
 
             return rotation * scaleMatrix * positionMatrix;
         }

@@ -25,7 +25,7 @@ namespace Raptor.Content
         [ExcludeFromCodeCoverage]
         public TextureLoader(IImageFile imageFile)
         {
-            this.gl = new GLInvoker();
+            this.gl = new SilkInvoker();
             this.imageFile = imageFile;
         }
 
@@ -45,7 +45,7 @@ namespace Raptor.Content
         {
             var (pixels, width, height) = this.imageFile.Load(filePath);
 
-            return new Texture(this.gl, Path.GetFileNameWithoutExtension(filePath), pixels, width, height);
+            return new Texture(this.gl, Path.GetFileNameWithoutExtension(filePath), pixels, (uint)width, (uint)height);
         }
     }
 }

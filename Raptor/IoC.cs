@@ -4,13 +4,17 @@
 
 namespace Raptor
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using FileIO.Core;
     using FileIO.File;
     using Raptor.Graphics;
     using Raptor.OpenGL;
+    using Silk.NET.Windowing;
+    using Silk.NET.Windowing.Common;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
+    using SilkWindow = Silk.NET.Windowing.Window;
 
     /// <summary>
     /// Provides dependency injection for the applcation.
@@ -22,7 +26,7 @@ namespace Raptor
         private static bool isInitialized;
 
         /// <summary>
-        /// The inversion of control container used to get instances of objects.
+        /// Gets the inversion of control container used to get instances of objects.
         /// </summary>
         public static Container Container
         {
@@ -42,7 +46,13 @@ namespace Raptor
         {
             IocContainer.Register<ITextFile, TextFile>();
             IocContainer.Register<IImageFile, ImageFile>();
-            IocContainer.Register<IGLInvoker, GLInvoker>();
+            IocContainer.Register<IGLInvoker>(() =>
+            {
+                if (Window.WindowInstance is null)
+                    throw new Exception($"The '{nameof(Window.WindowInstance)}' must not be null.");
+
+                return new SilkInvoker(Window.WindowInstance);
+            }, Lifestyle.Singleton);
 
             IocContainer.Register<IGPUBuffer, GPUBuffer<VertexData>>();
 

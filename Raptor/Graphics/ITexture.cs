@@ -8,12 +8,12 @@ namespace Raptor.Graphics
 
     public interface ITexture : IDisposable
     {
-        int ID { get; }
+        uint ID { get; }
 
         string Name { get; }
 
-        int Width { get; }
+        uint Width { get; }
 
-        int Height { get; }
+        uint Height { get; }
     }
 }

@@ -6,7 +6,7 @@ namespace Raptor
 {
     using System;
     using System.Drawing;
-    using OpenToolkit.Mathematics;
+    using System.Numerics;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.

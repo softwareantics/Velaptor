@@ -1,7 +1,7 @@
-﻿using OpenToolkit.Mathematics;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace RaptorTests.OpenGL
 {
@@ -19,8 +19,11 @@ namespace RaptorTests.OpenGL
             yield return new object[] { new Vector3(1, 2, 3), new Vector2(4, 5), new Vector4(66, 7, 8, 9),      10,             false };
             yield return new object[] { new Vector3(1, 2, 3), new Vector2(4, 5), new Vector4(6, 7, 8, 9),       100,            false };
         }
-        
+
         [ExcludeFromCodeCoverage]
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

@@ -14,14 +14,9 @@ namespace Raptor
     public struct FrameTime : IEquatable<FrameTime>
     {
         /// <summary>
-        /// Gets or sets the total time that has passed.
+        /// Gets or sets the total time that has passed for the current frame in milliseconds.
         /// </summary>
-        public TimeSpan TotalTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the total time that has passed for the current frame.
-        /// </summary>
-        public TimeSpan ElapsedTime { get; set; }
+        public double ElapsedTime { get; set; }
 
         public static bool operator ==(FrameTime left, FrameTime right) => left.Equals(right);
 
@@ -38,7 +33,7 @@ namespace Raptor
 
         /// <inheritdoc/>
         public bool Equals(FrameTime other)
-            => other.TotalTime == TotalTime && other.ElapsedTime == ElapsedTime;
+            => other.ElapsedTime == ElapsedTime;
 
         /// <inheritdoc/>
         public override int GetHashCode() => ElapsedTime.GetHashCode();

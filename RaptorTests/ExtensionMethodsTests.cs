@@ -1,7 +1,6 @@
-﻿using OpenToolkit.Mathematics;
-using Raptor;
-using Raptor.OpenGL;
+﻿using Raptor;
 using System.Drawing;
+using System.Numerics;
 using Xunit;
 
 namespace RaptorTests

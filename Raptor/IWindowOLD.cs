@@ -10,7 +10,7 @@ namespace Raptor
     /// Provides the core of a game which facilitates how the engine starts, stops,
     /// manages time and how the game loop runs.
     /// </summary>
-    public interface IWindow : IDisposable
+    public interface IWindowOLD : IDisposable
     {
         /// <summary>
         /// Gets or sets the width of the game window.

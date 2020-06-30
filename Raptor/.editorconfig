@@ -160,7 +160,7 @@ dotnet_diagnostic.SA1503.severity = none
 dotnet_diagnostic.SA1101.severity = none
 
 # SA1116: Split parameters should start on line after declaration
-dotnet_diagnostic.SA1116.severity = warning
+dotnet_diagnostic.SA1116.severity = none
 
 # SA1516: Elements should be separated by blank line
 dotnet_diagnostic.SA1516.severity = none

@@ -7,12 +7,12 @@ namespace Raptor.OpenGL
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using System.Numerics;
+    using Silk.NET.OpenGL;
 
     internal static class VertexDataAnalyzer
     {
-        private static readonly Dictionary<Type, int> ValidTypeSizes = new Dictionary<Type, int>()
+        private static readonly Dictionary<Type, uint> ValidTypeSizes = new Dictionary<Type, uint>()
         {
             // In order from least to greatest bytes
             { typeof(byte), sizeof(byte) },
@@ -26,18 +26,12 @@ namespace Raptor.OpenGL
             { typeof(ulong), sizeof(ulong) },
             { typeof(double), sizeof(double) },
             { typeof(Vector2), sizeof(float) * 2 },
-            { typeof(Vector2i), sizeof(int) * 2 },
             { typeof(Vector3), sizeof(float) * 3 },
-            { typeof(Vector3i), sizeof(int) * 3 },
-            { typeof(Vector2d), sizeof(double) * 2 },
             { typeof(Vector4), sizeof(float) * 4 },
-            { typeof(Vector4i), sizeof(int) * 4 },
-            { typeof(Vector3d), sizeof(double) * 3 },
-            { typeof(Vector4d), sizeof(double) * 4 },
-            { typeof(Matrix4), sizeof(float) * 16 },
+            { typeof(Matrix4x4), sizeof(float) * 16 },
         };
 
-        private static readonly Dictionary<Type, int> TotalItemsForTypes = new Dictionary<Type, int>()
+        private static readonly Dictionary<Type, uint> TotalItemsForTypes = new Dictionary<Type, uint>()
         {
             // In order from least to greatest bytes
             { typeof(byte), 1 },
@@ -51,15 +45,9 @@ namespace Raptor.OpenGL
             { typeof(ulong), 1 },
             { typeof(double), 1 },
             { typeof(Vector2), 2 },
-            { typeof(Vector2i), 2 },
             { typeof(Vector3), 3 },
-            { typeof(Vector3i), 3 },
-            { typeof(Vector2d), 2 },
             { typeof(Vector4), 4 },
-            { typeof(Vector4i), 4 },
-            { typeof(Vector3d), 3 },
-            { typeof(Vector4d), 3 },
-            { typeof(Matrix4), 16 },
+            { typeof(Matrix4x4), 16 },
         };
 
         // TODO: Need to find out the rest of the mappings
@@ -72,7 +60,7 @@ namespace Raptor.OpenGL
         };
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception text not used outside of method.")]
-        public static int GetTotalBytesForStruct(Type structType)
+        public static uint GetTotalBytesForStruct(Type structType)
         {
             if (structType is null)
                 throw new ArgumentNullException(nameof(structType), "The argument must not be null");
@@ -81,7 +69,7 @@ namespace Raptor.OpenGL
                 throw new Exception($"The given '{nameof(structType)}' must be a struct.");
 
             var publicFields = structType.GetFields();
-            var result = 0;
+            var result = 0u;
 
             // If any types are not of the valid type list, throw an exception
             foreach (var field in publicFields)
@@ -95,12 +83,12 @@ namespace Raptor.OpenGL
             return result;
         }
 
-        public static int GetTypeByteSize(Type type) => ValidTypeSizes[type];
+        public static uint GetTypeByteSize(Type type) => ValidTypeSizes[type];
 
-        public static int TotalItemsForType(Type type) => TotalItemsForTypes[type];
+        public static uint TotalItemsForType(Type type) => TotalItemsForTypes[type];
 
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception text not used outside of method.")]
-        public static int GetVertexSubDataOffset(Type structType, string subDataName)
+        public static uint GetVertexSubDataOffset(Type structType, string subDataName)
         {
             if (structType is null)
                 throw new ArgumentNullException(nameof(structType), "The argument must not be null");
@@ -109,7 +97,7 @@ namespace Raptor.OpenGL
                 throw new Exception($"The given '{nameof(structType)}' must be a struct.");
 
             var publicFields = structType.GetFields();
-            var result = 0;
+            var result = 0u;
 
             // If any types are not of the valid type list, throw an exception
             foreach (var field in publicFields)

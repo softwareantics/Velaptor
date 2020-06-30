@@ -20,6 +20,7 @@ namespace Raptor.Physics
         [ExcludeFromCodeCoverage]
         public PhysicsWorld(Vector2 gravity)
         {
+            Gravity = gravity;
         }
 
         /// <summary>

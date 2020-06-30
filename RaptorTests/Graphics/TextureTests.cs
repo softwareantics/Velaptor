@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Raptor.Graphics;
     using Raptor.OpenGL;
-    using OpenToolkit.Graphics.OpenGL4;
+    using Silk.NET.OpenGL;
     using Xunit;
     using Moq;
     using System.Drawing;
@@ -15,7 +15,7 @@
     {
         private readonly Mock<IGLInvoker> mockGL;
         private readonly byte[] pixelData;
-        private readonly int textureID = 1234;
+        private readonly uint textureID = 1234;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureTests"/> class.
@@ -59,7 +59,7 @@
             var texture = new Texture(this.mockGL.Object, "test-texture.png", this.pixelData, 2, 3);
 
             //Assert
-            this.mockGL.Verify(m => m.ObjectLabel(ObjectLabelIdentifier.Texture, this.textureID, -1, "test-texture.png"), Times.Once());
+            this.mockGL.Verify(m => m.ObjectLabel(ObjectIdentifier.Texture, this.textureID, 0, "test-texture.png"), Times.Once());
             this.mockGL.Verify(m => m.TexParameter(
                 TextureTarget.Texture2D,
                 TextureParameterName.TextureMinFilter,
@@ -83,7 +83,7 @@
             this.mockGL.Verify(m => m.TexImage2D(
                 TextureTarget.Texture2D,
                 0,
-                PixelInternalFormat.Rgba,
+                PixelFormat.Rgba,
                 2,
                 3,
                 0,
@@ -106,6 +106,9 @@
             this.mockGL.Verify(m => m.DeleteTexture(this.textureID), Times.Once());
         }
 
-        private byte[] ToByteArray(Color clr) => new[] { clr.A, clr.R, clr.G, clr.B};
+        private byte[] ToByteArray(Color clr)
+        {
+            return new[] { clr.A, clr.R, clr.G, clr.B };
+        }
     }
 }

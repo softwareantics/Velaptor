@@ -6,10 +6,8 @@ namespace Raptor.UI
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
     using System.Globalization;
     using System.Numerics;
-    using OpenToolkit.Graphics.OpenGL;
     using Raptor.Content;
     using Raptor.Graphics;
     using Raptor.Input;
@@ -28,7 +26,7 @@ namespace Raptor.UI
         private int visibleTextCharPosition;
         private int charPosDelta;
         private int characterPosition;
-        private int cursorElapsedMilliseconds;
+        private double cursorElapsedMilliseconds;
         private bool cursorVisible;
         private int rightSide;
         private int leftSide;
@@ -53,12 +51,12 @@ namespace Raptor.UI
         /// <summary>
         /// Gets the width of the <see cref="TextBox"/>.
         /// </summary>
-        public int Width => BackgroundTexture.Width;
+        public uint Width => BackgroundTexture.Width;
 
         /// <summary>
         /// Gets the height of the <see cref="TextBox"/>.
         /// </summary>
-        public int Height => BackgroundTexture.Height;
+        public uint Height => BackgroundTexture.Height;
 
         /// <summary>
         /// Gets the background UI of the <see cref="TextBox"/>.
@@ -111,7 +109,7 @@ namespace Raptor.UI
 
             ProcessKeys();
 
-            this.cursorElapsedMilliseconds += engineTime.ElapsedTime.Milliseconds;
+            this.cursorElapsedMilliseconds += engineTime.ElapsedTime;
 
             if (this.cursorElapsedMilliseconds >= 500)
             {
@@ -186,8 +184,8 @@ namespace Raptor.UI
         {
             var halfWidth = Width / 2;
 
-            this.leftSide = (int)Position.X - halfWidth + LEFTMARGIN;
-            this.rightSide = (int)Position.X + halfWidth - RIGHTMARGIN;
+            this.leftSide = (int)(Position.X - halfWidth + LEFTMARGIN);
+            this.rightSide = (int)(Position.X + halfWidth - RIGHTMARGIN);
         }
 
         /// <summary>

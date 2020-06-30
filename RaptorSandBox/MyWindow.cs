@@ -1,12 +1,6 @@
-using FileIO.File;
 using Raptor;
-using Raptor.Content;
 using Raptor.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 
 namespace RaptorSandBox
 {
@@ -20,6 +14,10 @@ namespace RaptorSandBox
 
         public MyWindow() : base(1020, 800)
         {
+            //HEre to test out GL calls becore context is created first.
+            //Looking into deferred actions class to handle this
+            //Enable line below to cause issue
+            //this.spriteBatch = RaptorFactory.CreateSpriteBatch(Width, Height);
         }
 
 

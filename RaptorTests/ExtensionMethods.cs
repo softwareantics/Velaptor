@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
-using OpenToolkit.Mathematics;
 
 namespace RaptorTests
 {
@@ -64,18 +64,37 @@ namespace RaptorTests
         }
 
 
-        public static bool IsEmpty(this Vector4 vector) =>
-            vector.X == 0 &&
-            vector.Y == 0 &&
-            vector.Z == 0 &&
-            vector.W == 0;
+        public static bool IsEmpty(this Vector4 vector)
+        {
+            return vector.X == 0 &&
+                vector.Y == 0 &&
+                vector.Z == 0 &&
+                vector.W == 0;
+        }
 
-
-        public static bool IsEmpty(this Matrix4 matrix) =>
-            matrix.Column0.IsEmpty() &&
-            matrix.Column1.IsEmpty() &&
-            matrix.Column2.IsEmpty() &&
-            matrix.Column3.IsEmpty();
+        public static bool IsEmpty(this Matrix4x4 matrix)
+        {
+            //Column 1
+            return matrix.M11 == 0f &&
+            matrix.M12 == 0f &&
+            matrix.M13 == 0f &&
+            matrix.M14 == 0f &&
+            //Column 2
+            matrix.M21 == 0f &&
+            matrix.M22 == 0f &&
+            matrix.M23 == 0f &&
+            matrix.M24 == 0f &&
+            //Column 3
+            matrix.M31 == 0f &&
+            matrix.M32 == 0f &&
+            matrix.M33 == 0f &&
+            matrix.M34 == 0f &&
+            //Column 4
+            matrix.M41 == 0f &&
+            matrix.M42 == 0f &&
+            matrix.M43 == 0f &&
+            matrix.M44 == 0f;
+        }
         #endregion
     }
 }

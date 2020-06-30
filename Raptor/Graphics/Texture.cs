@@ -7,8 +7,8 @@ namespace Raptor.Graphics
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using OpenToolkit.Graphics.OpenGL4;
     using Raptor.OpenGL;
+    using Silk.NET.OpenGL;
 
     /// <summary>
     /// The texture to render to the screen.
@@ -26,9 +26,9 @@ namespace Raptor.Graphics
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
         [ExcludeFromCodeCoverage]
-        public Texture(string name, byte[] pixelData, int width, int height)
+        public Texture(string name, byte[] pixelData, uint width, uint height)
         {
-            this.gl = new GLInvoker();
+            this.gl = new SilkInvoker();
             Init(name, pixelData, width, height);
         }
 
@@ -41,23 +41,23 @@ namespace Raptor.Graphics
         /// <param name="pixelData">The pixel data of the texture.</param>
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
-        internal Texture(IGLInvoker gl, string name, byte[] pixelData, int width, int height)
+        internal Texture(IGLInvoker gl, string name, byte[] pixelData, uint width, uint height)
         {
             this.gl = gl;
             Init(name, pixelData, width, height);
         }
 
         /// <inheritdoc/>
-        public int ID { get; protected set; }
+        public uint ID { get; protected set; }
 
         /// <inheritdoc/>
         public string Name { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
-        public int Width { get; protected set; }
+        public uint Width { get; protected set; }
 
         /// <inheritdoc/>
-        public int Height { get; protected set; }
+        public uint Height { get; protected set; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting
@@ -91,7 +91,7 @@ namespace Raptor.Graphics
         /// <param name="pixelData">The pixel data of the texture.</param>
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
-        private void Init(string name, byte[] pixelData, int width, int height)
+        private void Init(string name, byte[] pixelData, uint width, uint height)
         {
             ID = this.gl.GenTexture();
 
@@ -115,9 +115,9 @@ namespace Raptor.Graphics
         /// <param name="pixelData">The pixel data of the texture.</param>
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
-        private void UploadDataToGPU(string name, byte[] pixelData, int width, int height)
+        private void UploadDataToGPU(string name, byte[] pixelData, uint width, uint height)
         {
-            this.gl.ObjectLabel(ObjectLabelIdentifier.Texture, ID, -1, name);
+            this.gl.ObjectLabel(ObjectIdentifier.Texture, ID, 0, name);
 
             // Set the min and mag filters to linear
             this.gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
@@ -128,7 +128,7 @@ namespace Raptor.Graphics
             this.gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
             // Load the texture data to the GPU for the currently active texture slot
-            this.gl.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixelData);
+            this.gl.TexImage2D(TextureTarget.Texture2D, 0, PixelFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixelData);
         }
     }
 }
