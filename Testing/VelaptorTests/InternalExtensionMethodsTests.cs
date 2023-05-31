@@ -2629,6 +2629,19 @@ public class InternalExtensionMethodsTests
         // Assert
         actual.Should().Be(expected);
     }
+
+    [Fact]
+    public void Inverse_WhenInvoked_ReturnsInverseOfColor()
+    {
+        // Arrange
+        var sut = NETColor.FromArgb(255, 0, 102, 204);
+
+        // Act
+        var actual = sut.Inverse();
+
+        // Assert
+        actual.Should().Be(NETColor.FromArgb(255, 255, 153, 51));
+    }
     #endregion
 
     /// <summary>

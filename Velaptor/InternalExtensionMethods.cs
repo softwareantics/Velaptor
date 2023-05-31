@@ -14,6 +14,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Graphics;
+using Input;
 using OpenGL;
 using OpenGL.Batching;
 using OpenGL.GPUData;
@@ -21,6 +22,7 @@ using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using UI;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
@@ -421,6 +423,142 @@ internal static class InternalExtensionMethods
         keyboardState.IsKeyDown(KeyCode.Right) ||
         keyboardState.IsKeyDown(KeyCode.Up) ||
         keyboardState.IsKeyDown(KeyCode.Down);
+
+    public static void RemoveLastChar(this StringBuilder? value)
+    {
+        if (value is null || value.Length <= 0)
+        {
+            return;
+        }
+
+        value.Replace(value[^1].ToString(), string.Empty, value.Length - 1, 1);
+    }
+
+    // TODO: Set the start and end params as uint
+    public static string Substring(this StringBuilder? value, int start, int length)
+    {
+        if (value is null || start < 0 || start >= value.Length)
+        {
+            return string.Empty;
+        }
+
+        if (length < 0)
+        {
+            return string.Empty;
+        }
+
+        length = start + length > value.Length ? 0 : length;
+
+        return value.ToString(start, length);
+    }
+
+    // TODO: Set the index param as uint
+    public static void RemoveChar(this StringBuilder? value, int index)
+    {
+        if (value is null || index < 0 || index >= value.Length)
+        {
+            return;
+        }
+
+        value.Remove(index, 1);
+    }
+
+    public static bool IsEmpty(this StringBuilder? value) => value is null || value.Length <= 0;
+
+    public static void BumpAllToleft(this List<(char character, NETRectF bounds)> charBounds, float amount)
+    {
+        for (var i = 0; i < charBounds.Count; i++)
+        {
+            var currItem = charBounds[i];
+            currItem.bounds.X -= amount;
+            charBounds[i] = currItem;
+        }
+    }
+
+    public static void BumpAllToRight(this List<(char character, NETRectF bounds)> charBounds, float amount)
+    {
+        for (var i = 0; i < charBounds.Count; i++)
+        {
+            var currItem = charBounds[i];
+            currItem.bounds.X += amount;
+            charBounds[i] = currItem;
+        }
+    }
+
+    public static int TextRight(this List<(char character, NETRectF bounds)> charBounds)
+    {
+        if (charBounds.Count <= 0)
+        {
+            return 0;
+        }
+
+        return (int)charBounds[^1].bounds.Right;
+    }
+
+    public static float CharLeft(this List<(char character, NETRectF bounds)> charBounds, int index)
+    {
+        if (index < 0 || index >= charBounds.Count)
+        {
+            return 0f;
+        }
+
+        return charBounds[index].bounds.Left;
+    }
+
+    public static float CharRight(this List<(char character, NETRectF bounds)> charBounds, int index)
+    {
+        if (index < 0 || index >= charBounds.Count)
+        {
+            return 0f;
+        }
+
+        return charBounds[index].bounds.Right;
+    }
+
+    public static float CharWidth(this List<(char character, NETRectF bounds)> charBounds, int index)
+    {
+        if (index < 0 || index >= charBounds.Count)
+        {
+            return 0f;
+        }
+
+        return charBounds[index].bounds.Width;
+    }
+
+    public static Vector2 CenterPosition(this List<(char character, NETRectF bounds)> charBounds)
+    {
+        if (charBounds is null || charBounds.Count <= 0)
+        {
+            return Vector2.Zero;
+        }
+
+        var left = charBounds.Min(cb => cb.bounds.Left);
+        var right = charBounds.Max(cb => cb.bounds.Right);
+        var top = charBounds.Min(cb => cb.bounds.Top);
+        var bottom = charBounds.Max(cb => cb.bounds.Bottom);
+        var width = Math.Abs(left - right);
+        var height = Math.Abs(top - bottom);
+
+        return new Vector2(left + width.Half(), top + height.Half());
+    }
+
+    // public static bool IsEmpty(this List<(char character, NETRectF bounds)>? charBounds) => charBounds is null || charBounds.Count <= 0;
+
+    public static void BumpLeft(ref this Vector2 value, float amount) => value.X -= amount;
+
+    public static void BumpLeft(this float value, float amount) => value -= amount;
+
+    public static void BumpRight(ref this Vector2 value, float amount) => value.X += amount;
+
+    public static void BumpRight(this float value, float amount) => value += amount;
+
+    public static void SetX(ref this Vector2 value, float amount) => value.X = amount;
+
+    public static float Half(this float value) => value / 2;
+
+    public static uint Half(this uint value) => value / 2;
+
+    public static float HalfWidth(this NETSizeF value) => value.Width / 2f;
 
     /// <summary>
     /// Builds a name that represents a location of where an execution took place.
@@ -1376,7 +1514,7 @@ internal static class InternalExtensionMethods
             item.Thickness);
 
     /// <summary>
-    /// Converts the given <paramref name="value"/> from the type <see cref="Point"/> to the type <see cref="Vector2"/>.
+    /// Converts the given <paramref name="value"/> from the type <see cref="NETPoint"/> to the type <see cref="Vector2"/>.
     /// </summary>
     /// <param name="value">The value to convert.</param>
     /// <returns>The <see cref="Vector2"/> result.</returns>
@@ -1386,13 +1524,15 @@ internal static class InternalExtensionMethods
     /// Converts the given <paramref name="value"/> from the type <see cref="Vector2"/> to the type <see cref="NETPoint"/>.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>The <see cref="Point"/> result.</returns>
+    /// <returns>The <see cref="NETPoint"/> result.</returns>
     /// <remarks>
     ///     Converting from floating point components of a <see cref="Vector2"/> to
-    ///     integer components of a <see cref="Point"/> could result in a loss of information.
+    ///     integer components of a <see cref="NETPoint"/> could result in a loss of information.
     ///     Regular casting rules apply.
     /// </remarks>
     public static NETPoint ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);
+
+    public static bool IsEmpty<T>(this IEnumerable<T>? items) => items is null || !items.Any();
 
     /// <summary>
     /// Dequeues the given <paramref name="queue"/> of items until the <paramref name="untilPredicate"/> returns true.
@@ -1605,4 +1745,11 @@ internal static class InternalExtensionMethods
             circle.GradientType,
             circle.GradientStart,
             circle.GradientStop);
+
+    /// <summary>
+    /// Returns the inverse of the color.
+    /// </summary>
+    /// <param name="value">The color value to invert.</param>
+    /// <returns>The invert color of the original color.</returns>
+    public static NETColor Inverse(this NETColor value) => NETColor.FromArgb(255, 255 - value.R, 255 - value.G, 255 - value.B);
 }

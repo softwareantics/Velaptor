@@ -1,6 +1,6 @@
-{PROJECT_NAME} v{VERSION} just dropped!! 🚀
+CASL v1.0.0-preview.12 just dropped!! 🚀
 Check it out & take it for a spin & help support development. 🤘🏼
-Release: https://github.com/{REPO_OWNER}/{PROJECT_NAME}/releases/tag/v{VERSION}
-NuGet Package: https://www.nuget.org/packages/{REPO_OWNER}.{PROJECT_NAME}/{VERSION}
+Release: https://github.com/KinsonDigital/CASL/releases/tag/v1.0.0-preview.12
+NuGet Package: https://www.nuget.org/packages/KinsonDigital.CASL/1.0.0-preview.12
 Discord: https://discord.gg/qewu6fNgv7
-Project: https://github.com/{REPO_OWNER}/{PROJECT_NAME}
+Project: https://github.com/KinsonDigital/CASL

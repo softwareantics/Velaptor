@@ -1,4 +1,4 @@
-﻿// <copyright file="IFontRenderer.cs" company="KinsonDigital">
+// <copyright file="IFontRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -436,4 +436,6 @@ public interface IFontRenderer
     ///     </list>
     /// </remarks>
     void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color, int layer = 0);
+
+    void RenderBaseNEW(IFont font, Span<GlyphMetrics> glyphs, int x, int y, float renderSize, float angle, Color color, int layer = 0);
 }

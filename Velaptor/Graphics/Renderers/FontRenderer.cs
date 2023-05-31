@@ -166,8 +166,8 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
 
             // Creates the source rect
             var srcRect = currentCharMetric.GlyphBounds;
-            srcRect.Width = srcRect.Width <= 0 ? 1 : srcRect.Width;
-            srcRect.Height = srcRect.Height <= 0 ? 1 : srcRect.Height;
+            srcRect.Width = srcRect.Width <= 0 ? 0 : srcRect.Width;
+            srcRect.Height = srcRect.Height <= 0 ? 0 : srcRect.Height;
 
             // Calculate the height offset
             var heightOffset = currentCharMetric.GlyphHeight - currentCharMetric.HoriBearingY;
@@ -186,8 +186,9 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
             destRect.Width = atlasWidth;
             destRect.Height = atlasHeight;
 
+            // Translate the position for rotated text. This also calculates the position
+            // of the current glyph relative to the origin which is the center of the text
             var newPosition = destRect.GetPosition().RotateAround(origin, angle);
-
             destRect.X = newPosition.X;
             destRect.Y = newPosition.Y;
 
@@ -218,6 +219,141 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
         return result.ToArray();
     }
 
+    // TODO: Rename this and the RenderBase() method
+    public void RenderBaseNEW(IFont font, Span<GlyphMetrics> glyphs, int x, int y, float renderSize, float angle, Color color, int layer = 0)
+    {
+        if (font is null)
+        {
+            throw new ArgumentNullException(nameof(font), $"Cannot render a null '{nameof(IFont)}'.");
+        }
+
+        if (font.Size == 0u)
+        {
+            return;
+        }
+
+        renderSize = renderSize < 0f ? 0f : renderSize;
+
+        if (this.hasBegun is false)
+        {
+            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+        }
+
+        var normalizedSize = renderSize - 1f;
+        var originalX = (float)x;
+        var originalY = (float)y;
+        var characterY = (float)y;
+
+        if (glyphs.Length <= 0)
+        {
+            return;
+        }
+
+        var glyphItems = glyphs.ToArray();
+        var text = string.Join(string.Empty, glyphItems.Select(g => g.Glyph));
+
+        var textSize = font.Measure(text).ApplySize(normalizedSize);
+        var textHalfWidth = textSize.Width / 2f;
+
+        var atlasWidth = font.Atlas.Width.ApplySize(normalizedSize);
+        var atlasHeight = font.Atlas.Height.ApplySize(normalizedSize);
+
+        var firstLineFirstCharBearingX = glyphs[0].HoriBearingX;
+        var firstLineHeight = glyphItems.Max(g => g.GlyphHeight);
+        var textTop = originalY + firstLineHeight;
+        var textHalfHeight = textSize.Height / 2f;
+
+        characterY = textTop - textHalfHeight;
+
+        var characterX = originalX - textHalfWidth + firstLineFirstCharBearingX;
+        var textLinePos = new Vector2(characterX, characterY);
+
+        // Convert all of the glyphs to batch items to be rendered
+        var batchItems = ToFontBatchItems(
+            textLinePos,
+            glyphItems,
+            font,
+            new Vector2(x, y),
+            normalizedSize,
+            angle,
+            color,
+            atlasWidth,
+            atlasHeight);
+
+        var renderStamp = DateTime.Now;
+
+        foreach (var item in batchItems)
+        {
+            this.batchManager.AddFontItem(item, layer, renderStamp);
+        }
+    }
+
+    private void OldImplementation(IFont font, Span<GlyphMetrics> glyphs, int x, int y, float renderSize, float angle, Color color, int layer = 0)
+    {
+        if (font is null)
+        {
+            throw new ArgumentNullException(nameof(font), $"Cannot render a null '{nameof(IFont)}'.");
+        }
+
+        if (font.Size == 0u)
+        {
+            return;
+        }
+
+        renderSize = renderSize < 0f ? 0f : renderSize;
+
+        if (this.hasBegun is false)
+        {
+            throw new InvalidOperationException($"The '{nameof(IRenderer.Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+        }
+
+        var normalizedSize = renderSize - 1f;
+        var originalX = (float)x;
+        var originalY = (float)y;
+
+        if (glyphs.Length <= 0)
+        {
+            return;
+        }
+
+        // TODO: Rename chars
+        var chars = string.Join(string.Empty, glyphs.ToArray().Select(g => g.Glyph));
+        var textSize = font.Measure(chars).ApplySize(normalizedSize);
+
+        var textHalfWidth = textSize.Width / 2f;
+
+        var atlasWidth = font.Atlas.Width.ApplySize(normalizedSize);
+        var atlasHeight = font.Atlas.Height.ApplySize(normalizedSize);
+
+        var maxGlyphHeight = glyphs.ToArray().Max(g => g.GlyphBounds.Height);
+        var textTop = originalY + maxGlyphHeight;
+        var textHalfHeight = textSize.Height / 2f;
+
+        var characterY = textTop - textHalfHeight;
+
+        var characterX = originalX - textHalfWidth + glyphs[0].HoriBearingX;
+        var textLinePos = new Vector2(characterX, characterY);
+
+        // Convert all of the glyphs to batch items to be rendered
+        var batchItems = ToFontBatchItems(
+            textLinePos,
+            glyphs.ToArray(),
+            font,
+            new Vector2(x, y),
+            normalizedSize,
+            angle,
+            color,
+            atlasWidth,
+            atlasHeight);
+
+        var renderStamp = DateTime.Now;
+
+        foreach (var item in batchItems)
+        {
+            this.batchManager.AddFontItem(item, layer, renderStamp);
+        }
+    }
+
     /// <summary>
     /// The main root method for rendering text.
     /// </summary>
@@ -229,6 +365,7 @@ internal sealed class FontRenderer : RendererBase, IFontRenderer
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color to apply to the rendering.</param>
     /// <param name="layer">The layer to render the text.</param>
+    /// <remarks>This takes new line characters into account to render multiple lines of text.</remarks>
     /// <exception cref="ArgumentNullException">Thrown if the font object is null.</exception>
     /// <exception cref="InvalidOperationException">
     ///     Thrown if the <see cref="IRenderer.Begin"/> method has not been called before rendering.
