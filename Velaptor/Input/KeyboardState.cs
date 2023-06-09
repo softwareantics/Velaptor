@@ -96,17 +96,18 @@ public struct KeyboardState : IEquatable<KeyboardState>
 
     private Dictionary<KeyCode, bool> keyStates;
 
-    /*
     /// <summary>
     /// Gets a value indicating whether or not the caps lock key is on.
     /// </summary>
     public bool CapsLockOn => IsKeyDown(KeyCode.CapsLock);
 
+    /*
+    */
+
     //// <summary>
     //// Gets or sets a value indicating whether or not the num lock key is on.
     //// </summary>
     public bool NumLockOn => IsKeyDown(KeyCode.NumLock);
-    */
 
     /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
@@ -319,7 +320,6 @@ public struct KeyboardState : IEquatable<KeyboardState>
     {
         if (AnyShiftKeysDown())
         {
-            // NOTE!!  THIS MIGHT NOT WORK.  THE ToUpperInvariant() THAT IS
             if (LetterKeys.Contains(key))
             {
                 return key == KeyCode.Space ? ' ' : key.ToString().ToUpperInvariant()[0];
