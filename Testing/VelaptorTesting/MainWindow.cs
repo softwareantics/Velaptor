@@ -7,6 +7,7 @@ namespace VelaptorTesting;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Scenes;
 using Velaptor;
 using Velaptor.Factories;
@@ -35,85 +36,102 @@ public class MainWindow : Window
     /// </summary>
     public MainWindow()
     {
+        // TODO: Remove me
+        Position -= new Vector2(Width * 1.75f, 0);
+
         this.keyboard = InputFactory.CreateKeyboard();
 
-        this.nextButton = new Button { Text = "-->" };
-        this.previousButton = new Button { Text = "<--" };
+        // this.nextButton = new Button { Text = "-->" };
+        // this.previousButton = new Button { Text = "<--" };
 
         IRenderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
 
-        var textRenderingScene = new TextRenderingScene
-        {
-            Name = SplitByUpperCase(nameof(TextRenderingScene)),
-        };
+        // var textRenderingScene = new TextRenderingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(TextRenderingScene)),
+        // };
+        //
+        // var layeredTextRenderingScene = new LayeredTextRenderingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
+        // };
+        //
+        // var keyboardScene = new KeyboardScene
+        // {
+        //     Name = SplitByUpperCase(nameof(KeyboardScene)),
+        // };
+        //
+        // var mouseScene = new MouseScene
+        // {
+        //     Name = SplitByUpperCase(nameof(MouseScene)),
+        // };
+        //
+        // var layeredRenderingScene = new LayeredTextureRenderingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
+        // };
+        //
+        // var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
+        // {
+        //     Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
+        // };
+        //
+        // var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
+        // {
+        //     Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
+        // };
+        //
+        // var shapeScene = new ShapeScene
+        // {
+        //     Name = SplitByUpperCase(nameof(ShapeScene)),
+        // };
+        //
+        // var layeredRectScene = new LayeredRectRenderingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
+        // };
+        //
+        // var lineScene = new LineRenderingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(LineRenderingScene)),
+        // };
+        //
+        // var layeredLineScene = new LayeredLineRenderingScene
+        // {
+        //     Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
+        // };
+        //
+        // var soundScene = new SoundScene
+        // {
+        //     Name = SplitByUpperCase(nameof(SoundScene)),
+        // };
+        //
 
-        var layeredTextRenderingScene = new LayeredTextRenderingScene
-        {
-            Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
-        };
-
-        var keyboardScene = new KeyboardScene
-        {
-            Name = SplitByUpperCase(nameof(KeyboardScene)),
-        };
-
-        var mouseScene = new MouseScene
-        {
-            Name = SplitByUpperCase(nameof(MouseScene)),
-        };
-
-        var layeredRenderingScene = new LayeredTextureRenderingScene
-        {
-            Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
-        };
-
-        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene
-        {
-            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
-        };
-
-        var renderAnimatedGraphicsScene = new AnimatedGraphicsScene
-        {
-            Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
-        };
-
-        var shapeScene = new ShapeScene
-        {
-            Name = SplitByUpperCase(nameof(ShapeScene)),
-        };
-
-        var layeredRectScene = new LayeredRectRenderingScene
-        {
-            Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
-        };
-
-        var lineScene = new LineRenderingScene
-        {
-            Name = SplitByUpperCase(nameof(LineRenderingScene)),
-        };
-
-        var layeredLineScene = new LayeredLineRenderingScene
-        {
-            Name = SplitByUpperCase(nameof(LayeredLineRenderingScene)),
-        };
-
-        var soundScene = new SoundScene
+        var textBoxScene = new TextBoxScene()
         {
             Name = SplitByUpperCase(nameof(SoundScene)),
         };
 
-        SceneManager.AddScene(textRenderingScene, true);
-        SceneManager.AddScene(layeredTextRenderingScene);
-        SceneManager.AddScene(keyboardScene);
-        SceneManager.AddScene(mouseScene);
-        SceneManager.AddScene(layeredRenderingScene);
-        SceneManager.AddScene(renderNonAnimatedGraphicsScene);
-        SceneManager.AddScene(renderAnimatedGraphicsScene);
-        SceneManager.AddScene(shapeScene);
-        SceneManager.AddScene(layeredRectScene);
-        SceneManager.AddScene(lineScene);
-        SceneManager.AddScene(layeredLineScene);
-        SceneManager.AddScene(soundScene);
+        // var newGlyphRenderScene = new NewGlyphRenderScene()
+        // {
+        //     Name = SplitByUpperCase(nameof(NewGlyphRenderScene)),
+        // };
+
+        SceneManager.AddScene(textBoxScene, true);
+        // SceneManager.AddScene(newGlyphRenderScene, true);
+
+        // SceneManager.AddScene(textRenderingScene, true);
+        // SceneManager.AddScene(layeredTextRenderingScene);
+        // SceneManager.AddScene(keyboardScene);
+        // SceneManager.AddScene(mouseScene);
+        // SceneManager.AddScene(layeredRenderingScene);
+        // SceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        // SceneManager.AddScene(renderAnimatedGraphicsScene);
+        // SceneManager.AddScene(shapeScene);
+        // SceneManager.AddScene(layeredRectScene);
+        // SceneManager.AddScene(lineScene);
+        // SceneManager.AddScene(layeredLineScene);
+        // SceneManager.AddScene(soundScene);
     }
 
     /// <inheritdoc cref="Window.OnLoad"/>
@@ -122,17 +140,16 @@ public class MainWindow : Window
         const int buttonSpacing = 15;
         const int rightMargin = 15;
 
-        this.nextButton.Click += (_, _) => SceneManager.NextScene();
+        // this.nextButton.Click += (_, _) => SceneManager.NextScene();
+        // this.previousButton.Click += (_, _) => SceneManager.PreviousScene();
 
-        this.previousButton.Click += (_, _) => SceneManager.PreviousScene();
+        // this.nextButton.LoadContent();
+        // this.previousButton.LoadContent();
 
-        this.nextButton.LoadContent();
-        this.previousButton.LoadContent();
-
-        var buttonTops = (int)(Height - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
-        var buttonGroupLeft = (int)(Width - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
-        this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
-        this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
+        // var buttonTops = (int)(Height - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
+        // var buttonGroupLeft = (int)(Width - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
+        // this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
+        // this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
 
         SceneManager.LoadContent();
         base.OnLoad();
@@ -157,8 +174,8 @@ public class MainWindow : Window
             SceneManager.PreviousScene();
         }
 
-        this.nextButton.Update(frameTime);
-        this.previousButton.Update(frameTime);
+        // this.nextButton.Update(frameTime);
+        // this.previousButton.Update(frameTime);
 
         this.prevKeyState = currentKeyState;
 
@@ -174,8 +191,8 @@ public class MainWindow : Window
         SceneManager.Render();
 
         // Render the scene manager UI on top of all other textures
-        this.nextButton.Render();
-        this.previousButton.Render();
+        // this.nextButton.Render();
+        // this.previousButton.Render();
 
         IRenderer.End();
         base.OnDraw(frameTime);
@@ -184,8 +201,8 @@ public class MainWindow : Window
     /// <inheritdoc cref="Window.OnUnload"/>
     protected override void OnUnload()
     {
-        this.previousButton.UnloadContent();
-        this.nextButton.UnloadContent();
+        // this.previousButton.UnloadContent();
+        // this.nextButton.UnloadContent();
 
         base.OnUnload();
     }

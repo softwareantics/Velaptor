@@ -6,6 +6,7 @@ namespace VelaptorTesting;
 
 using System;
 using System.Drawing;
+using System.Linq;
 using Velaptor.Graphics;
 
 public static class ExtensionMethods
@@ -239,5 +240,76 @@ public static class ExtensionMethods
             ColorGradient.Vertical => ColorGradient.None,
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+
+    public static T Next<T>(this T enumValue)
+        where T : Enum
+    {
+        T[] enumValues = (T[])Enum.GetValues(typeof(T));
+        var currentIndex = Array.IndexOf(enumValues, enumValue);
+        var nextIndex = (currentIndex + 1) % enumValues.Length;
+
+        return enumValues[nextIndex];
+    }
+
+    public static T Previous<T>(this T enumValue)
+        where T : Enum
+    {
+        T[] enumValues = (T[])Enum.GetValues(typeof(T));
+        var currentIndex = Array.IndexOf(enumValues, enumValue);
+        var nextIndex = (currentIndex - 1) % enumValues.Length;
+        nextIndex = nextIndex < 0
+            ? Array.IndexOf(enumValues, enumValues[^1])
+            : nextIndex;
+
+        return enumValues[nextIndex];
+    }
+
+    public static Color IncreaseRedBy(this Color clr, int amount)
+    {
+        var newValue = clr.R + amount;
+        newValue = newValue > 255 ? 255  : newValue;
+
+        return Color.FromArgb(clr.A, newValue, clr.G, clr.B);
+    }
+
+    public static Color DecreaseRedBy(this Color clr, int amount)
+    {
+        var newValue = clr.R - amount;
+        newValue = newValue < 0 ? 0 : newValue;
+
+        return Color.FromArgb(clr.A, newValue, clr.G, clr.B);
+    }
+
+    public static Color IncreaseGreenBy(this Color clr, int amount)
+    {
+        var newValue = clr.G + amount;
+        newValue = newValue > 255 ? 255  : newValue;
+
+        return Color.FromArgb(clr.A, clr.R, newValue, clr.B);
+    }
+
+    public static Color DecreaseGreenBy(this Color clr, int amount)
+    {
+        var newValue = clr.G - amount;
+        newValue = newValue < 0 ? 0 : newValue;
+
+        return Color.FromArgb(clr.A, clr.R, newValue, clr.B);
+    }
+
+    public static Color IncreaseBlueBy(this Color clr, int amount)
+    {
+        var newValue = clr.B + amount;
+        newValue = newValue > 255 ? 255  : newValue;
+
+        return Color.FromArgb(clr.A, clr.R, clr.G, newValue);
+    }
+
+    public static Color DecreaseBlueBy(this Color clr, int amount)
+    {
+        var newValue = clr.B - amount;
+        newValue = newValue < 0 ? 0 : newValue;
+
+        return Color.FromArgb(clr.A, clr.R, clr.G, newValue);
     }
 }

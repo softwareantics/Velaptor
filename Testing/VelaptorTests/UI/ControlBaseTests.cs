@@ -1,4 +1,4 @@
-// <copyright file="ControlBaseTests.cs" company="KinsonDigital">
+﻿// <copyright file="ControlBaseTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -455,6 +455,16 @@ public class ControlBaseTests
         // Assert
         monitor.Should().Raise(nameof(ControlBase.MouseUp));
         monitor.Should().Raise(nameof(ControlBase.Click));
+    }
+
+    [Fact]
+    public void Update_WhenKeyboardKeyIsPressedIntoTheDownPosition_InvokesKeyDownEvent()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
     }
 
     [Fact]

@@ -50,3 +50,23 @@ public enum ShapeType
     /// </summary>
     Circle = 2,
 }
+
+public enum TextBoxSetting
+{
+    TextColor = 0,
+
+    MoveTextBox = 1,
+
+    TextBoxWidth = 2,
+
+    FontChange = 3,
+}
+
+public enum ColorComponent
+{
+    Red,
+
+    Green,
+
+    Blue,
+}

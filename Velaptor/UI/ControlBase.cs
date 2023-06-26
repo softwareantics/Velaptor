@@ -21,10 +21,12 @@ public abstract class ControlBase : IControl
     private KeyboardState prevKeyboardState;
     private Point prevMousePos;
 
+    // TODO: Create code to unsubscribe all events when the control is disposed of.
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ControlBase"/> class.
     /// </summary>
-    /// <param name="keyboard">The system keyboard.</param>
+    /// <param name="keyboard">Manages keyboard input.</param>
     /// <param name="mouse">The system mouse.</param>
     protected ControlBase(IAppInput<KeyboardState> keyboard, IAppInput<MouseState> mouse)
     {
